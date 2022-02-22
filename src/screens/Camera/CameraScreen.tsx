@@ -25,13 +25,14 @@ export default function CameraScreen({ navigation }: any) {
     setHasPermission(status === "granted");
   };
 
-  const cameraRef = useRef(null);
+  const cameraRef = useRef<any>(null);
 
   const takePhoto = async () => {
     handleLoading(true);
 
     try {
       let photo = await cameraRef.current.takePictureAsync();
+
       handleSelectImage(photo);
       navigation.navigate("Home");
     } catch (error) {

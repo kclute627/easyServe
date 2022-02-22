@@ -5,90 +5,37 @@ import Animated, {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
-  Easing,
-  useAnimatedGestureHandler,
 } from "react-native-reanimated";
 import {
   PanGestureHandler,
-  PinchGesture,
   PinchGestureHandler,
-  NativeViewGestureHandler,
-  GestureDetector,
-  Gesture,
 } from "react-native-gesture-handler";
+import { panGesture, pinchGesture } from "./Helper";
 
-type GesturePropTypes = {
-  startX: number;
-  startY: number;
-};
 export default function ImageLoaded({ image }: any) {
-  //defendant cords
+  //defendant shared Values
   const defXPosition = useSharedValue(0);
   const defYPosition = useSharedValue(0);
+  const defHeight = useSharedValue(100);
+  const defWidth = useSharedValue(150);
 
   //Plaintiff cords
   const plaXPosition = useSharedValue(0);
   const plaYPosition = useSharedValue(0);
+  const plaHeight = useSharedValue(100);
+  const plaWidth = useSharedValue(150);
 
   //Case cords
   const caseXPosition = useSharedValue(0);
   const caseYPosition = useSharedValue(0);
+  const caseHeight = useSharedValue(100);
+  const caseWidth = useSharedValue(150);
 
   //Court cords
   const courtXPosition = useSharedValue(0);
   const courtYPosition = useSharedValue(0);
-
-  //Defendant gesture handler
-  const defgestureHandler = useAnimatedGestureHandler({
-    onStart: (event, ctx: GesturePropTypes) => {
-      ctx.startX = defXPosition.value;
-      ctx.startY = defYPosition.value;
-    },
-    onActive: (event, ctx) => {
-      defXPosition.value = ctx.startX + event.translationX;
-      defYPosition.value = ctx.startY + event.translationY;
-    },
-    onEnd: (event) => {},
-  });
-
-  //Plaintiff gesture handler
-  const plagestureHandler = useAnimatedGestureHandler({
-    onStart: (event, ctx: GesturePropTypes) => {
-      ctx.startX = plaXPosition.value;
-      ctx.startY = plaYPosition.value;
-    },
-    onActive: (event, ctx) => {
-      plaXPosition.value = ctx.startX + event.translationX;
-      plaYPosition.value = ctx.startY + event.translationY;
-    },
-    onEnd: (event) => {},
-  });
-
-  //Case gesture handler
-  const casegestureHandler = useAnimatedGestureHandler({
-    onStart: (event, ctx: GesturePropTypes) => {
-      ctx.startX = caseXPosition.value;
-      ctx.startY = caseYPosition.value;
-    },
-    onActive: (event, ctx) => {
-      caseXPosition.value = ctx.startX + event.translationX;
-      caseYPosition.value = ctx.startY + event.translationY;
-    },
-    onEnd: (event) => {},
-  });
-
-  //Court gesture handler
-  const courtgestureHandler = useAnimatedGestureHandler({
-    onStart: (event, ctx: GesturePropTypes) => {
-      ctx.startX = courtXPosition.value;
-      ctx.startY = courtYPosition.value;
-    },
-    onActive: (event, ctx) => {
-      courtXPosition.value = ctx.startX + event.translationX;
-      courtYPosition.value = ctx.startY + event.translationY;
-    },
-    onEnd: (event) => {},
-  });
+  const courtHeight = useSharedValue(100);
+  const courtWidth = useSharedValue(150);
 
   //Defendant style
 
@@ -100,6 +47,8 @@ export default function ImageLoaded({ image }: any) {
       ],
       borderColor: "#d9f53d",
       backgroundColor: "rgba(217, 245, 61, 0.74)",
+      height: defHeight.value,
+      width: defWidth.value,
     };
   });
 
@@ -113,6 +62,8 @@ export default function ImageLoaded({ image }: any) {
       ],
       borderColor: "#08f77c",
       backgroundColor: "rgba(8, 247, 124, 0.68)",
+      height: plaHeight.value,
+      width: plaWidth.value,
     };
   });
   //Case Style
@@ -125,6 +76,8 @@ export default function ImageLoaded({ image }: any) {
       ],
       borderColor: "#0328ce",
       backgroundColor: "rgba(3, 40, 206, 0.78)",
+      height: caseHeight.value,
+      width: caseWidth.value,
     };
   });
 
@@ -138,46 +91,37 @@ export default function ImageLoaded({ image }: any) {
       ],
       borderColor: "#d16405",
       backgroundColor: "rgba(209, 100, 5, 0.64)",
+      height: courtHeight.value,
+      width: courtWidth.value,
     };
   });
 
   const boxes = [
     {
       title: "Defendant",
-
       style: animatedBoxDef,
-      gesture: defgestureHandler,
+      gesture: panGesture("Defendant", defXPosition, defYPosition),
+      pinchGesture: pinchGesture(defHeight, defWidth),
     },
     {
       title: "Plaintiff",
       style: animatedBoxPla,
-      gesture: plagestureHandler,
+      gesture: panGesture("Plaintiff", plaXPosition, plaYPosition),
+      pinchGesture: pinchGesture(plaHeight, plaWidth),
     },
     {
       title: "Case Number",
       style: animatedBoxCase,
-      gesture: casegestureHandler,
+      gesture: panGesture("Case", caseXPosition, caseYPosition),
+      pinchGesture: pinchGesture(caseHeight, caseWidth),
     },
     {
       title: "Court",
       style: animatedBoxCourt,
-      gesture: courtgestureHandler,
+      gesture: panGesture("Court", courtXPosition, courtYPosition),
+      pinchGesture: pinchGesture(courtHeight, courtWidth),
     },
   ];
-
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-
-  const pinchGestureFunction = useAnimatedGestureHandler({
-    onStart: (event, ctx) => {
-      console.log('PINCHSTARTED')
-    },
-    onEnd: (event) => {
-      console.log("PINCHENDED");
-    },
-  });
-    
-    
 
   return (
     <View style={styles.imageView}>
@@ -190,7 +134,7 @@ export default function ImageLoaded({ image }: any) {
       <View style={styles.listView}>
         {boxes.map((item, i) => {
           return (
-            <PinchGestureHandler onGestureEvent={pinchGestureFunction} key={i}>
+            <PinchGestureHandler onGestureEvent={item.pinchGesture} key={i}>
               <Animated.View>
                 <PanGestureHandler onGestureEvent={item.gesture} key={i}>
                   <Animated.View style={[item.style, styles.box]}>
@@ -201,13 +145,6 @@ export default function ImageLoaded({ image }: any) {
             </PinchGestureHandler>
           );
         })}
-        {/* <AnimatedFlatList
-          style={styles.flatList}
-          data={boxes}
-          horizontal
-          renderItem={box}
-          keyExtractor={(item) => item.backgroundColor}
-        /> */}
       </View>
     </View>
   );

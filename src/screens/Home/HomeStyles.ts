@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   image: {
-    height: 600,
+    height: SCREEN_HEIGHT - 170,
     width: SCREEN_WIDTH - 10,
     zIndex: -1,
   },
@@ -26,28 +26,22 @@ export const styles = StyleSheet.create({
     position: "relative",
   },
   box: {
-    height: 100,
-    width: 150,
     borderWidth: 2,
-    margin: 5,
+
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 3000,
-
-    // position: "absolute",
-    // bottom: 30,
-    // left: 10,
+  
   },
   boxView: {
     marginVertical: 10,
   },
   listView: {
-    
-    flexDirection: 'row',
-   
+    position: "absolute",
+    top: 10,
+    left: 5,
   },
   flatList: {
     height: 100,
     width: 300,
-  }
+  },
 });
